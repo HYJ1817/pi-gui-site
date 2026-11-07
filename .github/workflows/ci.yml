@@ -33,3 +33,31 @@ jobs:
         run: npm run test:smoke
         env:
           BROWSER_CHANNEL: chrome
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs: checks
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+
+      - name: Stage site files
+        run: mkdir -p site && cp index.html style.css main.js release-data.js robots.txt sitemap.xml site/ && cp -r assets site/
+
+      - name: Deploy (wrangler, Direct Upload)
+        run: npx wrangler pages deploy site --project-name=pi-gui-site --branch=main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

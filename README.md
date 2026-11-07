@@ -64,13 +64,23 @@ npm run gen:assets   # 截图 assets/og.html 与 assets/icon.html → og-image.p
 
 ## 部署
 
-Cloudflare Pages 连接本仓库：
+当前方案：**CI 直传部署（Direct Upload）**。Pages 项目 `pi-gui-site` 是手动上传类型
+（Direct Upload 不能补挂 Git 集成），push 到 main 由 GitHub Actions 在测试通过后执行
+`wrangler pages deploy` 部署（含自定义域名 pi-gui.881817.xyz）。
 
-- Framework preset: None
-- Build command: 留空
-- Build output directory: /
+所需仓库 Secrets（Settings → Secrets and variables → Actions）：
 
-绑定域名 pi-gui.881817.xyz。每次 push 到 main 自动重新部署。
+- `CLOUDFLARE_API_TOKEN`：My Profile → API Tokens → 自定义令牌，权限 `Account · Cloudflare Pages · Edit`
+- `CLOUDFLARE_ACCOUNT_ID`：域名的 Overview 页可见
+
+手动部署（本地）：
+
+```bash
+CLOUDFLARE_API_TOKEN=<token> CLOUDFLARE_ACCOUNT_ID=<id> \
+npx wrangler pages deploy site --project-name=pi-gui-site --branch=main
+```
+
+（site/ 为暂存目录：index.html、style.css、main.js、release-data.js、robots.txt、sitemap.xml 与 assets/）
 
 ## 常见改动提示
 
