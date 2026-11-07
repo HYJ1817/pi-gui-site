@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pi-gui.881817.xyz/sitemap.xml

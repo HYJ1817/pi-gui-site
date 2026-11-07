@@ -5,29 +5,98 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pi GUI — Pi Coding Agent 的本地桌面工作空间</title>
 <meta name="description" content="Pi GUI：在一个窗口中管理项目、会话、模型、工具执行与文件变更。Windows · 本地优先 · 多会话 · 可视化工作流。">
-<meta property="og:title" content="Pi GUI">
-<meta property="og:description" content="为 Pi Coding Agent 打造的本地桌面工作空间">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316161a'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='38' fill='%23fafaf7' text-anchor='middle'%3E%CF%80%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="canonical" href="https://pi-gui.881817.xyz/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pi GUI">
+<meta property="og:title" content="Pi GUI — Pi Coding Agent 的本地桌面工作空间">
+<meta property="og:description" content="在一个窗口中管理项目、会话、模型、工具执行与文件变更。Windows · 本地优先 · 多会话 · 可视化工作流。">
+<meta property="og:url" content="https://pi-gui.881817.xyz/">
+<meta property="og:image" content="https://pi-gui.881817.xyz/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Pi GUI — Pi Coding Agent 的本地桌面工作空间">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pi GUI — Pi Coding Agent 的本地桌面工作空间">
+<meta name="twitter:description" content="在一个窗口中管理项目、会话、模型、工具执行与文件变更。Windows · 本地优先 · 多会话 · 可视化工作流。">
+<meta name="twitter:image" content="https://pi-gui.881817.xyz/assets/og-image.png">
+<meta name="theme-color" content="#fafaf7">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon.png" type="image/png" sizes="64x64">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>
+(function () {
+  var mode = null;
+  try { mode = localStorage.getItem("pi-gui-theme"); } catch (e) {}
+  var dark = false;
+  try { dark = window.matchMedia("(prefers-color-scheme: dark)").matches; } catch (e) {}
+  document.documentElement.setAttribute("data-theme", mode === "light" || mode === "dark" ? mode : dark ? "dark" : "light");
+})();
+</script>
+<link rel="stylesheet" href="style.css?v=11">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Pi GUI",
+  "url": "https://pi-gui.881817.xyz/",
+  "downloadUrl": "https://github.com/HYJ1817/pi-gui/releases/latest",
+  "operatingSystem": "Windows",
+  "applicationCategory": "DeveloperApplication",
+  "description": "为 Pi Coding Agent 打造的本地桌面工作空间：在一个窗口中管理项目、会话、模型、工具执行与文件变更。",
+  "author": { "@type": "Person", "name": "HYJ1817" },
+  "license": "https://github.com/HYJ1817/pi-gui/blob/main/LICENSE",
+  "releaseNotes": "https://github.com/HYJ1817/pi-gui/releases",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
 </head>
 <body>
 
 <div class="grain" aria-hidden="true"></div>
 <div class="progress" aria-hidden="true"><span id="prog"></span></div>
 
+<a class="skip-link" href="#top">跳到主要内容</a>
+
 <header class="nav" id="nav">
   <a class="brand" href="#top">
     <span class="brand-mark" aria-hidden="true">π</span>
     <span>Pi&nbsp;GUI</span>
   </a>
-  <nav class="nav-links">
+  <nav class="nav-links" id="nav-links" aria-label="主导航">
     <a href="#features">功能</a>
     <a href="#flow">工作流</a>
     <a href="#arch">架构</a>
     <a href="#start">开始</a>
     <a href="https://github.com/HYJ1817/pi-gui" target="_blank" rel="noopener">GitHub</a>
   </nav>
+  <div class="nav-cta">
+    <div class="theme-seg" role="group" aria-label="主题选择" data-theme-seg>
+      <button type="button" data-theme-choice="light" aria-pressed="false">浅色</button>
+      <button type="button" data-theme-choice="dark" aria-pressed="false">深色</button>
+      <button type="button" data-theme-choice="system" aria-pressed="false">自动</button>
+    </div>
+    <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="打开菜单">
+      <span class="menu-box" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+  </div>
 </header>
+
+<div class="nav-panel" id="nav-panel" hidden>
+  <nav aria-label="移动端导航">
+    <a class="nav-panel-link" href="#features">功能</a>
+    <a class="nav-panel-link" href="#flow">工作流</a>
+    <a class="nav-panel-link" href="#arch">架构</a>
+    <a class="nav-panel-link" href="#start">开始</a>
+    <a class="nav-panel-link" href="#download">下载</a>
+    <a class="nav-panel-link" href="https://github.com/HYJ1817/pi-gui" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+  <div class="theme-seg theme-seg-panel" role="group" aria-label="主题选择" data-theme-seg>
+    <button type="button" data-theme-choice="light" aria-pressed="false">浅色</button>
+    <button type="button" data-theme-choice="dark" aria-pressed="false">深色</button>
+    <button type="button" data-theme-choice="system" aria-pressed="false">自动</button>
+  </div>
+</div>
 
 <main id="top">
 
@@ -323,7 +392,10 @@
       <div class="sec-body">
         <p class="reveal">Electron + Node.js 通过本机 RPC 连接 Pi，项目与会话保存在本地，
         不要求云端账户，不上传使用遥测。使用云端模型时，请求直接发往你所配置的供应商。</p>
-        <p class="reveal">Windows 安装程序经 SignPath.io 免费代码签名，证书由 SignPath Foundation 提供；源码以 MIT 协议开放。</p>
+        <p class="reveal">Windows 安装包目前尚未接入正式代码签名（正在申请 SignPath Foundation 的开源免费签名）。因此 Windows 可能提示
+        「未知发布者」——请只从 <a href="https://github.com/HYJ1817/pi-gui/releases/latest" target="_blank" rel="noopener">官方 GitHub Releases</a>
+        下载，并核对 Release 自带的 <code class="inline">SHA256SUMS.txt</code>
+        <a href="https://github.com/HYJ1817/pi-gui/blob/main/CODE_SIGNING_POLICY.md" target="_blank" rel="noopener">签名政策说明 ↗</a>。</p>
         <ul class="privacy-row reveal">
           <li><strong>0</strong><span>云端账户要求</span></li>
           <li><strong>0</strong><span>使用遥测数据</span></li>
@@ -340,38 +412,76 @@
       <span class="sec-num">07</span>
       <span class="sec-label">快速开始</span>
       <span class="sec-rule" aria-hidden="true"></span>
-      <span class="sec-meta">约 5 分钟</span>
+      <span class="sec-meta">约 10 分钟</span>
     </div>
-    <h2 class="sec-title reveal">三步开始工作</h2>
+    <h2 class="sec-title reveal">五步开始工作</h2>
     <div class="steps">
       <div class="step reveal">
         <span class="s-num">1</span>
         <div>
-          <h3>安装 Pi</h3>
-          <p>Pi GUI 使用本机独立安装的 Pi Coding Agent，需要 Node.js 22.19+ 并配置模型供应商。</p>
+          <h3>安装 Node.js 22.19+</h3>
+          <p>Pi 与 Pi GUI 都依赖 Node.js，安装 <a href="https://nodejs.org/" target="_blank" rel="noopener">LTS 版本</a> 后验证：</p>
           <div class="code-wrap">
-            <pre class="code"><code id="install-cmd">npm install -g @earendil-works/pi-coding-agent
-pi --version</code></pre>
-            <button class="copy-command" id="copy-command" type="button" aria-label="复制安装命令">复制命令 ⧉</button>
+            <pre class="code"><code>node -v</code></pre>
+            <button class="copy-command" type="button" aria-label="复制命令 node -v">复制 ⧉</button>
           </div>
         </div>
       </div>
       <div class="step reveal">
         <span class="s-num">2</span>
         <div>
-          <h3>下载 Pi GUI</h3>
-          <p>在 <a href="https://github.com/HYJ1817/pi-gui/releases/latest" target="_blank" rel="noopener">Releases</a> 选择 Windows 版本：
-          安装版 <code class="inline">Pi-GUI-Setup.exe</code> 或便携版 <code class="inline">Pi-GUI-portable.zip</code>。</p>
+          <h3>安装 Pi Coding Agent</h3>
+          <p>全局安装本机使用的 Pi（也可改用 <a href="https://github.com/earendil-works/pi#readme" target="_blank" rel="noopener">Pi 官方安装器</a>，可自动装缺失依赖）：</p>
+          <div class="code-wrap">
+            <pre class="code"><code>npm install -g @earendil-works/pi-coding-agent
+pi --version</code></pre>
+            <button class="copy-command" type="button" aria-label="复制 Pi 安装命令">复制 ⧉</button>
+          </div>
         </div>
       </div>
       <div class="step reveal">
         <span class="s-num">3</span>
         <div>
-          <h3>开始工作</h3>
+          <h3>配置模型供应商</h3>
+          <p>首次运行需完成至少一个供应商的认证，之后才能开始对话：
+          在 <a href="https://github.com/HYJ1817/pi-gui/blob/main/docs/provider-auth.md" target="_blank" rel="noopener">供应商说明</a>
+          与 <a href="https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/usage.md" target="_blank" rel="noopener">Pi 使用文档</a> 有完整指引。</p>
+          <div class="code-wrap">
+            <pre class="code"><code>cd 你的项目目录
+pi</code></pre>
+            <button class="copy-command" type="button" aria-label="复制启动命令">复制 ⧉</button>
+          </div>
+        </div>
+      </div>
+      <div class="step reveal">
+        <span class="s-num">4</span>
+        <div>
+          <h3>下载并运行 Pi GUI</h3>
+          <p>从下方的 <a href="#download">下载区</a> 获取 Windows 版本。下载后可通过 Release 自带的 <code class="inline">SHA256SUMS.txt</code> 校验完整性。</p>
+          <details class="step-details">
+            <summary>安装版和便携版有什么区别？<span>+</span></summary>
+            <p>两者功能一致：<strong>安装版</strong>（<code class="inline">Pi-GUI-Setup-*.exe</code>）安装到当前用户目录
+            （<code class="inline">%LOCALAPPDATA%\Programs\Pi GUI</code>），可从开始菜单启动，支持应用内更新；
+            <strong>便携版</strong>（<code class="inline">Pi-GUI-*-portable.zip</code>）解压后直接运行
+            <code class="inline">Pi GUI.exe</code>，不写注册表，适合免安装或 U 盘使用。</p>
+          </details>
+        </div>
+      </div>
+      <div class="step reveal">
+        <span class="s-num">5</span>
+        <div>
+          <h3>创建项目，开始对话</h3>
           <p>打开 Pi GUI，添加本地项目文件夹，在输入框描述任务，右侧面板检查文件变更与执行结果。</p>
         </div>
       </div>
     </div>
+    <details class="help reveal">
+      <summary>安装不顺利？先看这几条<span>+</span></summary>
+      <p>· 提示 <code class="inline">pi</code> 不是内部或外部命令：npm 全局目录不在 PATH，重开终端或检查 <code class="inline">npm prefix -g</code>。</p>
+      <p>· <code class="inline">node -v</code> 低于 22.19：升级 Node.js，或改用官方安装器由其自动处理。</p>
+      <p>· Windows 提示「未知发布者」：安装包尚未接入正式签名，请从官方 Releases 下载并核对 <code class="inline">SHA256SUMS.txt</code>（见下方下载区）。</p>
+      <p>· npm 报网络错误：确认能访问 npm 源，企业网络需配置代理后重试。</p>
+    </details>
   </section>
 
   <!-- 下载 -->
@@ -388,18 +498,32 @@ pi --version</code></pre>
       <div class="dl-cards reveal">
         <a class="dl-card" id="download-installer" href="https://github.com/HYJ1817/pi-gui/releases/latest" target="_blank" rel="noopener">
           <h3>安装版</h3>
-          <p id="installer-filename">Pi-GUI-Setup.exe</p>
+          <p id="installer-filename">Pi-GUI-Setup-&lt;版本&gt;.exe</p>
           <span class="dl-size" id="installer-size">下载文件</span>
           <span class="dl-arrow">→</span>
         </a>
         <a class="dl-card" id="download-portable" href="https://github.com/HYJ1817/pi-gui/releases/latest" target="_blank" rel="noopener">
           <h3>便携版</h3>
-          <p id="portable-filename">Pi-GUI-portable.zip</p>
+          <p id="portable-filename">Pi-GUI-&lt;版本&gt;-portable.zip</p>
           <span class="dl-size" id="portable-size">下载文件</span>
           <span class="dl-arrow">→</span>
         </a>
       </div>
-      <p class="dl-note reveal">从源码运行、测试与发布流程见 <a href="https://github.com/HYJ1817/pi-gui/tree/main/docs" target="_blank" rel="noopener">开发文档</a>。遇到问题请到 <a href="https://github.com/HYJ1817/pi-gui/issues" target="_blank" rel="noopener">Issues</a> 反馈。</p>
+      <div class="sha-block reveal" id="sha-block">
+        <div class="sha-head">
+          <span class="sha-title">校验文件完整性（推荐）</span>
+          <a class="sha-link" id="sha-sums-link" href="https://github.com/HYJ1817/pi-gui/releases/latest" target="_blank" rel="noopener">下载 SHA256SUMS.txt ↗</a>
+        </div>
+        <p class="sha-note">下载 <code class="inline">SHA256SUMS.txt</code>，与安装包放在同一目录，运行以下命令后核对输出：</p>
+        <div class="code-wrap">
+          <pre class="code"><code id="sha-commands">certutil -hashfile "Pi-GUI-Setup-&lt;版本&gt;.exe" SHA256
+certutil -hashfile "Pi-GUI-&lt;版本&gt;-portable.zip" SHA256</code></pre>
+          <button class="copy-command" type="button" aria-label="复制校验命令">复制 ⧉</button>
+        </div>
+      </div>
+      <p class="dl-note reveal">安装版与便携版的功能说明见 <a href="#start">快速开始</a>；
+      从源码运行与发布流程见 <a href="https://github.com/HYJ1817/pi-gui/tree/main/docs" target="_blank" rel="noopener">开发文档</a>。
+      遇到问题请到 <a href="https://github.com/HYJ1817/pi-gui/issues" target="_blank" rel="noopener">Issues</a> 反馈。</p>
     </div>
   </section>
 
@@ -438,7 +562,7 @@ pi --version</code></pre>
       </details>
       <details>
         <summary>必须先安装 Pi 吗？<span>+</span></summary>
-        <p>是。Pi GUI 通过官方 RPC 协议驱动本机独立安装的 Pi Coding Agent，需先安装 Node.js 22.19+ 并配置模型供应商。</p>
+        <p>是。Pi GUI 通过官方 RPC 协议驱动本机独立安装的 Pi Coding Agent，完整流程见上方「快速开始」。</p>
       </details>
       <details>
         <summary>支持哪些系统？<span>+</span></summary>
@@ -460,6 +584,7 @@ pi --version</code></pre>
   </span>
 </footer>
 
-<script src="main.js?v=8"></script>
+<script src="release-data.js?v=1"></script>
+<script src="main.js?v=9"></script>
 </body>
 </html>
