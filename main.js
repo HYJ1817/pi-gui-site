@@ -1,9 +1,83 @@
-// Pi GUI 官网 — 平滑滚动 · 入场动画 · 交互示意 · 发布信息
+// Pi GUI 官网 — 主题切换 · 导航 · 入场动画 · 交互示意 · 发布信息
 (function () {
   "use strict";
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var RELEASES = "https://github.com/HYJ1817/pi-gui/releases";
+  var PD = window.PiReleaseData || {};
+
+  /* ===== 主题：浅色 / 深色 / 跟随系统 ===== */
+  var THEME_KEY = "pi-gui-theme";
+  var schemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+  var themeMode = "system";
+  try { themeMode = localStorage.getItem(THEME_KEY) || ""; } catch (e) {}
+  if (themeMode !== "light" && themeMode !== "dark" && themeMode !== "system") themeMode = "system";
+
+  function resolveTheme(mode) {
+    if (mode === "dark") return "dark";
+    if (mode === "light") return "light";
+    return schemeMq.matches ? "dark" : "light";
+  }
+
+  function applyTheme() {
+    var resolved = resolveTheme(themeMode);
+    document.documentElement.setAttribute("data-theme", resolved);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", resolved === "dark" ? "#14141a" : "#fafaf7");
+  }
+
+  function syncThemeButtons() {
+    document.querySelectorAll("[data-theme-seg] button").forEach(function (btn) {
+      btn.setAttribute("aria-pressed", String(btn.dataset.themeChoice === themeMode));
+    });
+  }
+
+  function onSchemeChange() { if (themeMode === "system") applyTheme(); }
+  if (schemeMq.addEventListener) schemeMq.addEventListener("change", onSchemeChange);
+
+  document.querySelectorAll("[data-theme-seg] button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      themeMode = btn.dataset.themeChoice || "system";
+      try { localStorage.setItem(THEME_KEY, themeMode); } catch (e) {}
+      applyTheme();
+      syncThemeButtons();
+    });
+  });
+  applyTheme();
+  syncThemeButtons();
+
+  /* ===== 移动端菜单：点击 / Escape / 外部点击 / 链接点击关闭 ===== */
+  var menuBtn = document.getElementById("menu-toggle");
+  var menuPanel = document.getElementById("nav-panel");
+  var menuOpen = false;
+
+  function setMenu(open) {
+    if (!menuBtn || !menuPanel) return;
+    menuOpen = open;
+    menuBtn.setAttribute("aria-expanded", String(open));
+    menuBtn.setAttribute("aria-label", open ? "关闭菜单" : "打开菜单");
+    menuPanel.hidden = !open;
+    document.documentElement.classList.toggle("menu-open", open);
+  }
+
+  if (menuBtn && menuPanel) {
+    menuBtn.addEventListener("click", function () { setMenu(!menuOpen); });
+    menuPanel.addEventListener("click", function (e) {
+      if (e.target.closest("a")) setMenu(false);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (menuOpen && e.key === "Escape") { setMenu(false); menuBtn.focus(); }
+    });
+    document.addEventListener("click", function (e) {
+      if (!menuOpen) return;
+      var t = e.target;
+      if (!t.closest || (!t.closest(".nav") && !t.closest("#nav-panel"))) setMenu(false);
+    });
+    window.addEventListener("resize", function () {
+      if (menuOpen && window.innerWidth > 859) setMenu(false);
+    });
+    setMenu(false);
+  }
 
   /* 平滑滚动：外部脚本异步注入，失败回落原生 */
   if (!reduced) {
@@ -191,47 +265,28 @@
     });
   });
 
-  /* 复制安装命令 */
-  var copyBtn = document.getElementById("copy-command");
-  if (copyBtn) {
-    copyBtn.addEventListener("click", function () {
-      var text = "npm install -g @earendil-works/pi-coding-agent\npi --version";
+  /* 复制命令：所有 .code-wrap 内的复制按钮通用 */
+  document.querySelectorAll(".copy-command").forEach(function (btn) {
+    btn.dataset.fallbackLabel = btn.textContent;
+    btn.addEventListener("click", function () {
+      var wrap = btn.closest(".code-wrap");
+      var code = wrap && wrap.querySelector("code");
+      var text = code ? code.textContent : (btn.getAttribute("data-copy") || "");
       var done = function (ok) {
-        copyBtn.textContent = ok ? "已复制 ✓" : "请手动复制";
-        setTimeout(function () { copyBtn.textContent = "复制命令 ⧉"; }, 2200);
+        btn.textContent = ok ? "已复制 ✓" : "请手动复制";
+        setTimeout(function () { btn.textContent = btn.dataset.fallbackLabel || "复制 ⧉"; }, 2200);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
       } else { done(false); }
     });
-  }
+  });
 
-  /* 发布信息：只显示校验过的 GitHub 链接 */
+  /* 发布信息：数据解析在 release-data.js 中（可测试），此处只负责渲染与降级 */
   var statusEl = document.getElementById("release-status");
   var listEl = document.getElementById("release-list");
-  var safeUrl = function (candidate) {
-    try {
-      var u = new URL(candidate);
-      return u.protocol === "https:" && /(^|\.)github\.com$|(^|\.)githubusercontent\.com$/.test(u.hostname) ? u.href : null;
-    } catch (e) { return null; }
-  };
-  var plain = function (md) {
-    if (!md || typeof md !== "string") return "查看该版本的详细变更与修复说明。";
-    var text = md
-      .replace(/<!--[\s\S]*?-->/g, "").replace(/```[\s\S]*?```/g, "")
-      .replace(/!\[[^\]]*\]\([^)]*\)/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-      .replace(/^[#>*\-\s]+/gm, "").replace(/[*_`~]/g, "").replace(/<[^>]+>/g, "")
-      .split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean).slice(0, 2).join(" · ");
-    return text.length > 120 ? text.slice(0, 120).trim() + "…" : (text || "查看该版本的详细变更与修复说明。");
-  };
-  var dateText = function (v) {
-    var d = new Date(v);
-    if (isNaN(d.valueOf())) return "";
-    return d.getFullYear() + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + ("0" + d.getDate()).slice(-2);
-  };
-  var sizeText = function (n) {
-    return typeof n === "number" && n > 0 ? (n / 1048576).toFixed(1) + " MB" : "下载文件";
-  };
+  var shaLink = document.getElementById("sha-sums-link");
+  var shaCode = document.getElementById("sha-commands");
 
   function releaseRow(rel) {
     var item = document.createElement("article");
@@ -243,18 +298,19 @@
     ver.textContent = rel.tag_name || "版本更新";
     var date = document.createElement("span");
     date.className = "release-date";
-    date.textContent = dateText(rel.published_at);
+    date.textContent = PD.formatDate ? PD.formatDate(rel.published_at) : "";
     stamp.append(ver, date);
     var copy = document.createElement("div");
     copy.className = "release-copy";
     var h = document.createElement("h3");
     h.textContent = rel.name || ("发布 " + (rel.tag_name || ""));
+    var summary = PD.summarize ? PD.summarize(rel.body) : { text: "查看该版本的详细变更与修复说明。" };
     var p = document.createElement("p");
-    p.textContent = plain(rel.body);
+    p.textContent = summary.text;
     copy.append(h, p);
     var link = document.createElement("a");
     link.className = "release-link";
-    link.href = safeUrl(rel.html_url) || RELEASES;
+    link.href = (PD.safeUrl && PD.safeUrl(rel.html_url)) || RELEASES;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     link.textContent = "↗";
@@ -263,16 +319,66 @@
     return item;
   }
 
+  /* 资产写入：找到对应文件才算数，找不到一律指向 Releases 页面，不用过期资源顶替 */
   function setAsset(linkId, nameId, sizeId, asset) {
     var link = document.getElementById(linkId);
     var name = document.getElementById(nameId);
     var size = document.getElementById(sizeId);
-    if (!link || !asset) return;
-    var url = safeUrl(asset.browser_download_url);
-    if (!url) return;
+    if (!link) return;
+    var url = asset && PD.safeUrl ? PD.safeUrl(asset.browser_download_url) : null;
+    if (!url) {
+      if (name) name.textContent = "见 Releases 页面获取";
+      if (size) size.textContent = "未找到对应文件";
+      return;
+    }
     link.href = url;
     if (name) name.textContent = asset.name;
-    if (size) size.textContent = sizeText(asset.size) + " · 直接下载";
+    if (size) size.textContent = (PD.formatSize ? PD.formatSize(asset.size) : "") + " · 直接下载";
+  }
+
+  function applyVersion(latest, stable) {
+    var tag = latest.tag_name;
+    var v1 = document.getElementById("ver");
+    var v2 = document.getElementById("ver2");
+    if (v1) v1.textContent = tag;
+    if (v2) v2.textContent = tag;
+    if (statusEl) {
+      statusEl.textContent = "最新稳定版 " + tag +
+        (latest.published_at ? " · " + PD.formatDate(latest.published_at) : "") +
+        " · 数据来自 GitHub Releases";
+    }
+    var setup = PD.findAsset(latest, "setup");
+    var portable = PD.findAsset(latest, "portable");
+    var sums = PD.findAsset(latest, "checksums");
+    setAsset("download-installer", "installer-filename", "installer-size", setup);
+    setAsset("download-portable", "portable-filename", "portable-size", portable);
+    if (shaCode) shaCode.textContent = PD.checksumCommands(setup, portable);
+    if (shaLink) {
+      var sumsUrl = sums ? PD.safeUrl(sums.browser_download_url) : null;
+      if (sumsUrl) {
+        shaLink.href = sumsUrl;
+        shaLink.textContent = "下载 SHA256SUMS.txt (" + tag + ") ↗";
+      }
+    }
+    if (listEl && PD.stableReleases) {
+      listEl.replaceChildren.apply(listEl, stable.slice(0, 3).map(releaseRow));
+    }
+  }
+
+  function degrade() {
+    if (statusEl) statusEl.textContent = "暂时无法获取版本信息，请前往 GitHub Releases 查看最新安装包。";
+    if (shaLink) shaLink.textContent = "从 Releases 页面下载 SHA256SUMS.txt ↗";
+    if (listEl) {
+      listEl.replaceChildren();
+      var ph = document.createElement("div");
+      ph.className = "release-placeholder";
+      ph.textContent = "更新记录暂时无法加载，请前往 ";
+      var a = document.createElement("a");
+      a.href = RELEASES; a.target = "_blank"; a.rel = "noopener noreferrer";
+      a.textContent = "GitHub Releases ↗";
+      ph.append(a, " 查看。");
+      listEl.append(ph);
+    }
   }
 
   function loadReleases() {
@@ -284,39 +390,12 @@
       if (!r.ok) throw new Error("HTTP " + r.status);
       return r.json();
     }).then(function (all) {
-      if (!Array.isArray(all)) throw new Error("bad payload");
-      var stable = all.filter(function (x) { return x && !x.draft && !x.prerelease && x.tag_name; })
-        .sort(function (a, b) { return new Date(b.published_at || 0) - new Date(a.published_at || 0); });
+      var stable = PD.stableReleases ? PD.stableReleases(all) : [];
       if (!stable.length) throw new Error("no stable release");
-      var latest = stable[0];
-      var tag = latest.tag_name;
-      var v1 = document.getElementById("ver");
-      var v2 = document.getElementById("ver2");
-      if (v1) v1.textContent = tag;
-      if (v2) v2.textContent = tag;
-      if (statusEl) statusEl.textContent = "最新稳定版 " + tag + (latest.published_at ? " · " + dateText(latest.published_at) : "") + " · 数据来自 GitHub Releases";
-      var assets = Array.isArray(latest.assets) ? latest.assets : [];
-      var setup = assets.find(function (a) { return /setup.*\.exe$/i.test(a.name || "") && /pi[-_ ]?gui/i.test(a.name || ""); });
-      var portable = assets.find(function (a) { return /portable.*\.zip$/i.test(a.name || "") && /pi[-_ ]?gui/i.test(a.name || ""); });
-      setAsset("download-installer", "installer-filename", "installer-size", setup);
-      setAsset("download-portable", "portable-filename", "portable-size", portable);
-      if (listEl) listEl.replaceChildren.apply(listEl, stable.slice(0, 3).map(releaseRow));
-    }).catch(function () {
-      if (statusEl) statusEl.textContent = "暂时无法获取版本信息，请前往 GitHub Releases 查看最新安装包。";
-      if (listEl) {
-        listEl.replaceChildren();
-        var ph = document.createElement("div");
-        ph.className = "release-placeholder";
-        ph.textContent = "更新记录暂时无法加载，请前往 ";
-        var a = document.createElement("a");
-        a.href = RELEASES; a.target = "_blank"; a.rel = "noopener noreferrer";
-        a.textContent = "GitHub Releases ↗";
-        ph.append(a, " 查看。");
-        listEl.append(ph);
-      }
-    }).finally(function () { clearTimeout(timer); });
+      applyVersion(stable[0], stable);
+    }).catch(degrade).finally(function () { clearTimeout(timer); });
   }
 
   if (window.fetch) loadReleases();
-  else if (statusEl) statusEl.textContent = "请通过 GitHub Releases 查看最新版本。";
+  else degrade();
 })();

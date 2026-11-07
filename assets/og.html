@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- OG 分享图源文件：1200×630 · 由 tools/gen-assets.mjs 截图为 assets/og-image.png。纯 CSS，不含真实截图。 -->
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 630px; overflow: hidden;
+    font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", "Helvetica Neue", sans-serif;
+    background: #101014; color: #f2f0ea; position: relative;
+  }
+  /* 不加噪点层：fractalNoise 会显著增大 PNG 体积 */
+  .glow {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(55% 50% at 15% 12%, rgba(201, 169, 124, 0.10), transparent 70%),
+      radial-gradient(45% 45% at 85% 80%, rgba(201, 169, 124, 0.06), transparent 70%);
+  }
+  .grid {
+    position: absolute; inset: 0; opacity: 0.35;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(75% 75% at 50% 40%, #000, transparent 90%);
+  }
+  .wrap { position: relative; z-index: 2; height: 100%; padding: 72px 84px; display: flex; align-items: center; justify-content: space-between; gap: 40px; }
+  .left { max-width: 620px; }
+  .brand { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; }
+  .mark {
+    width: 52px; height: 52px; border-radius: 14px; background: #edeae3; color: #101014;
+    font-family: Georgia, serif; font-size: 34px; line-height: 1; display: grid; place-items: center; padding-bottom: 2px;
+  }
+  .brand-name { font-family: Georgia, "Songti SC", "Noto Serif SC", serif; font-size: 30px; letter-spacing: 0.04em; font-weight: 600; }
+  .brand-sub { font-size: 13px; letter-spacing: 0.22em; color: rgba(242, 240, 234, 0.5); font-family: "SFMono-Regular", Menlo, monospace; margin-top: 5px; }
+  h1 { font-family: Georgia, "Songti SC", "Noto Serif SC", serif; font-size: 58px; line-height: 1.34; font-weight: 600; letter-spacing: 0.015em; }
+  h1 em { font-style: normal; color: #c9a97c; }
+  h1 .nw { white-space: nowrap; }
+  .sub { margin-top: 26px; font-size: 21px; color: rgba(242, 240, 234, 0.66); letter-spacing: 0.04em; }
+  .tags { display: flex; gap: 12px; margin-top: 34px; flex-wrap: wrap; }
+  .tag {
+    font-family: "SFMono-Regular", Menlo, monospace; font-size: 12.5px; letter-spacing: 0.1em;
+    color: rgba(242, 240, 234, 0.6); border: 1px solid rgba(242, 240, 234, 0.16); border-radius: 999px; padding: 7px 15px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .foot { position: absolute; left: 84px; right: 84px; bottom: 54px; display: flex; justify-content: space-between; align-items: center; z-index: 2;
+    font-family: "SFMono-Regular", Menlo, monospace; font-size: 14px; letter-spacing: 0.12em; color: rgba(242, 240, 234, 0.42); }
+  .foot b { color: #c9a97c; font-weight: 500; }
+
+  /* 右侧迷你工作台示意（纯装饰，与 Hero 工作台同一种视觉语言） */
+  .win {
+    width: 380px; flex: none; background: #16161c; border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 16px; box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.75); overflow: hidden; transform: rotate(0.6deg);
+  }
+  .tbar { height: 40px; display: flex; align-items: center; gap: 14px; padding: 0 16px; background: #1a1a20; border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-family: "SFMono-Regular", Menlo, monospace; font-size: 10.5px; }
+  .dots { display: flex; gap: 6px; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.28); }
+  .tname { color: rgba(242, 240, 234, 0.6); letter-spacing: 0.05em; }
+  .tbody { display: grid; grid-template-columns: 1fr 168px; height: 312px; }
+  .chat { padding: 18px 16px; display: flex; flex-direction: column; gap: 14px; justify-content: center; }
+  .say-u { align-self: flex-start; max-width: 92%; font-size: 12px; line-height: 1.7; color: rgba(242,240,234,0.75);
+    padding: 9px 12px; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; background: rgba(255,255,255,0.035); }
+  .say-a { font-size: 12px; line-height: 1.7; color: rgba(242,240,234,0.5); }
+  .tool-fam {
+    display: flex; gap: 8px; align-items: center; font-family: "SFMono-Regular", Menlo, monospace; font-size: 10px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 10px;
+  }
+  .tool-fam b { color: #d8c9b0; font-weight: 400; }
+  .tool-fam span { color: rgba(242, 240, 234, 0.36); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ok { margin-left: auto; color: #8fae91; }
+  .diffs { border-left: 1px solid rgba(255, 255, 255, 0.07); background: #14141a; padding: 12px 0; font-family: "SFMono-Regular", Menlo, monospace; font-size: 10px; line-height: 1.9; }
+  .dh { color: rgba(242,240,234,0.55); padding: 0 12px 8px; letter-spacing: 0.08em; font-size: 9.5px; }
+  .dl { padding: 0 12px; white-space: pre; overflow: hidden; text-overflow: ellipsis; color: rgba(242, 240, 234, 0.4); }
+  .dl.add { color: #9fc2a2; background: rgba(122, 166, 126, 0.12); }
+  .dl.rem { color: #c79b9b; background: rgba(176, 118, 118, 0.1); }
+  .dl.ctx { color: rgba(201, 169, 124, 0.72); }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="left">
+      <div class="brand">
+        <div class="mark">π</div>
+        <div>
+          <div class="brand-name">Pi GUI</div>
+          <div class="brand-sub">PI CODING AGENT · DESKTOP WORKSPACE</div>
+        </div>
+      </div>
+      <h1>一个窗口，<br>管好整个 <em class="nw">Agent 工作流</em></h1>
+      <p class="sub">项目 · 会话 · 模型 · 工具执行 · 文件变更，尽在掌握</p>
+      <div class="tags">
+        <span class="tag">Windows</span>
+        <span class="tag">本地优先</span>
+        <span class="tag">多会话</span>
+        <span class="tag">MIT</span>
+      </div>
+    </div>
+    <div class="win" aria-hidden="true">
+      <div class="tbar"><span class="dots"><i></i><i></i><i></i></span><span class="tname">Pi GUI / my-project</span></div>
+      <div class="tbody">
+        <div class="chat">
+          <div class="say-u">帮我梳理会话恢复逻辑，并指出需要修改的文件。</div>
+          <div class="say-a">正在检查会话状态与恢复流程，已定位相关模块。</div>
+          <div class="tool-fam"><b>read_file</b><span>lib/session-recovery.js</span><span class="ok">✓</span></div>
+          <div class="say-a">已找到 3 处关键调用，请审阅右侧变更。</div>
+        </div>
+        <div class="diffs">
+          <div class="dh">CHANGES · 2</div>
+          <div class="dl ctx">@@ -42,6 +42,8</div>
+          <div class="dl">  load(id)</div>
+          <div class="dl rem">- if (!s) return</div>
+          <div class="dl add">+ if (!s) {</div>
+          <div class="dl add">+   restore(id)</div>
+          <div class="dl add">+ }</div>
+          <div class="dl">  resume()</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>pi-gui.881817.xyz</b></span><span>本地优先 · 开源 · 免费</span></div>
+</body>
+</html>
