@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pi GUI — Pi Coding Agent 的本地桌面工作空间</title>
+<meta name="description" content="Pi GUI：在一个窗口中管理项目、会话、模型、工具执行与文件变更。Windows · 本地优先 · 多会话 · 可视化工作流。">
+<meta property="og:title" content="Pi GUI">
+<meta property="og:description" content="为 Pi Coding Agent 打造的本地桌面工作空间">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316161a'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='38' fill='%23fafaf7' text-anchor='middle'%3E%CF%80%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"><span id="prog"></span></div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top">
+    <span class="brand-mark" aria-hidden="true">π</span>
+    <span>Pi&nbsp;GUI</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#features">功能</a>
+    <a href="#flow">工作流</a>
+    <a href="#arch">架构</a>
+    <a href="#start">开始</a>
+    <a href="https://github.com/HYJ1817/pi-gui" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <div class="hero-top reveal">
+        <span class="tag" id="ver">v0.32</span>
+        <span class="tag">Windows</span>
+        <span class="tag">MIT</span>
+        <span class="eyebrow">PI CODING AGENT · DESKTOP WORKSPACE</span>
+      </div>
+      <h1 class="hero-title">
+        <span class="line"><span class="reveal">一个窗口，</span></span>
+        <span class="line"><span class="reveal delay-1">管好整个 <span class="nowrap">Agent 工作流</span></span></span>
+      </h1>
+      <p class="hero-sub reveal delay-2">
+        Pi GUI 为 Pi Coding Agent 提供本地桌面工作空间：
+        项目、会话、模型、工具执行与文件变更，尽在掌握。
+      </p>
+      <div class="hero-cta reveal delay-3">
+        <a class="btn btn-solid" href="https://github.com/HYJ1817/pi-gui/releases/latest" target="_blank" rel="noopener">
+          <span>下载最新版</span><span class="btn-arrow">↓</span>
+        </a>
+        <a class="btn" href="https://github.com/HYJ1817/pi-gui" target="_blank" rel="noopener">
+          <span>查看源码</span><span class="btn-arrow">→</span>
+        </a>
+      </div>
+      <p class="hero-meta reveal delay-3">本地优先 · 多会话 · 可视化工作流 · 受控撤销 · 内置浏览器</p>
+
+      <!-- 交互式示意：纯前端，不运行真实 Agent -->
+      <figure class="hero-visual reveal delay-2" aria-label="Pi GUI 交互式工作台示意">
+        <div class="demo-heading">
+          <span class="demo-heading-left"><span class="live-dot"></span>WORKSPACE PREVIEW<span class="demo-suffix">可交互示意</span></span>
+          <span class="demo-counter" id="demo-counter">01 / 04</span>
+        </div>
+        <div class="window demo-window" id="demo-window" data-scene="sessions">
+          <div class="titlebar">
+            <span class="titlebar-dots"><i></i><i></i><i></i></span>
+            <span class="titlebar-title">Pi GUI <span>/</span> my-project</span>
+            <span class="titlebar-status"><span class="status-pulse"></span>LOCAL</span>
+          </div>
+          <div class="workspace">
+            <aside class="rail">
+              <div class="rail-header"><span class="rail-logo">π</span><span>工作空间</span></div>
+              <div class="rail-section">项目</div>
+              <div class="rail-project"><span class="folder-glyph">▣</span>my-project<span class="folder-chevron">⌄</span></div>
+              <div class="rail-section rail-section-small">最近会话</div>
+              <div class="rail-sessions" id="demo-sessions">
+                <div class="rail-session active"><span class="session-circle"></span><span>恢复会话逻辑</span><em>现在</em></div>
+                <div class="rail-session"><span class="session-circle blue"></span><span>供应商管理</span><em>2m</em></div>
+                <div class="rail-session"><span class="session-circle violet"></span><span>测试与验证</span><em>1h</em></div>
+              </div>
+              <div class="rail-foot"><span class="rail-user">P</span><span>本地工作区</span><span class="rail-foot-gear">⚙</span></div>
+            </aside>
+            <div class="thread">
+              <div class="thread-top"><span class="thread-title" id="demo-thread-title">恢复会话逻辑</span><span class="thread-top-state"><span></span>已连接</span></div>
+              <div class="thread-content">
+                <div class="msg user"><span class="msg-label"><span class="avatar user-avatar">你</span>YOU</span><p id="demo-prompt">帮我梳理这个仓库的会话恢复逻辑，并指出需要修改的文件。</p></div>
+                <div class="msg agent"><span class="msg-label"><span class="avatar agent-avatar">π</span>PI AGENT</span>
+                  <p class="agent-response" id="demo-response">正在检查会话状态与恢复流程，已定位相关模块。</p>
+                  <div class="tool"><span class="tool-icon">⌘</span><span class="tool-name" id="demo-tool-name">read_file</span><span class="tool-path" id="demo-tool-path">lib/session-recovery.js</span><span class="tool-state" id="demo-tool-state">完成 ✓</span></div>
+                  <p class="agent-followup" id="demo-followup">已找到 3 处关键调用，接下来核对恢复路径。</p>
+                </div>
+              </div>
+              <div class="composer"><span class="composer-plus">＋</span><span class="composer-placeholder">给 Pi 发送消息…</span><span class="composer-model" id="demo-model">Claude Sonnet</span><span class="composer-send">↗</span></div>
+              <div class="composer-hint">Pi Coding Agent<span>·</span>本地运行</div>
+            </div>
+            <aside class="panel">
+              <div class="panel-head"><span>变更</span><span class="panel-count" id="demo-file-count">2 个文件</span></div>
+              <div class="panel-file"><span>▤</span><span id="demo-file-name">session-recovery.js</span><span class="panel-file-change">M</span></div>
+              <div class="diff" id="demo-diff"><div class="diff-line context">@@ -42,6 +42,8 @@</div><div class="diff-line normal">  const session = load(id)</div><div class="diff-line remove">- if (!session) return</div><div class="diff-line add">+ if (!session) {</div><div class="diff-line add">+   return restore(id)</div><div class="diff-line add">+ }</div><div class="diff-line normal">  session.resume()</div></div>
+              <div class="panel-foot"><span class="panel-foot-dot"></span><span id="demo-panel-status">变更可审阅</span><span class="panel-foot-check">✓</span></div>
+            </aside>
+          </div>
+        </div>
+        <div class="demo-controls" role="tablist" aria-label="选择交互演示场景">
+          <button class="demo-tab is-active" type="button" role="tab" aria-selected="true" tabindex="0" data-scene="sessions"><span class="demo-tab-index">01</span>多会话并行</button>
+          <button class="demo-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-scene="models"><span class="demo-tab-index">02</span>模型切换</button>
+          <button class="demo-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-scene="changes"><span class="demo-tab-index">03</span>Git 变更</button>
+          <button class="demo-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-scene="tools"><span class="demo-tab-index">04</span>工具执行</button>
+        </div>
+        <figcaption id="demo-caption" aria-live="polite">在同一窗口管理多个项目与会话，随时切换工作上下文。纯前端演示，不会执行真实任务。</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 功能 -->
+  <section class="section" id="features">
+    <div class="section-head">
+      <span class="sec-num">01</span>
+      <span class="sec-label">主要功能</span>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-meta">7 项</span>
+    </div>
+    <h2 class="sec-title reveal">把 Agent 工作流<br>切分到看得见的每一步</h2>
+    <div class="feature-list">
+      <div class="feature reveal">
+        <div class="f-head"><span class="f-idx">A</span><h3>项目与会话</h3></div>
+        <p>按项目整理历史会话，支持搜索、分叉、归档与多会话并行工作。</p>
+      </div>
+      <div class="feature reveal">
+        <div class="f-head"><span class="f-idx">B</span><h3>Agent 对话</h3></div>
+        <p>流式消息、Markdown、Thinking 展示、工具执行时间线与文件附件。</p>
+      </div>
+      <div class="feature reveal">
+        <div class="f-head"><span class="f-idx">C</span><h3>Git 变更</h3></div>
+        <p>右侧工作面板实时查看文件与 Diff，支持审阅与受控撤销。</p>
+      </div>
+      <div class="feature reveal">
+        <div class="f-head"><span class="f-idx">D</span><h3>模型管理</h3></div>
+        <p>切换供应商、模型与思考等级，管理认证与项目备用模型。</p>
+      </div>
+      <div class="feature reveal">
+        <div class="f-head"><span class="f-idx">E</span><h3>工作面板</h3></div>
+        <p>按需打开内置浏览器、文件变更、Specs 与协同工作区。</p>
+      </div>
+      <div class="feature reveal">
+        <div class="f-head"><span class="f-idx">F</span><h3>任务与审阅</h3></div>
+        <p>创建带依赖的任务，组织 Agent 执行，检查结果与验证证据。</p>
+      </div>
+      <div class="feature reveal">
+        <div class="f-head"><span class="f-idx">G</span><h3>扩展能力</h3></div>
+        <p>管理 Skills、Extensions 与 Pi 原生 MCP，按需安装扩展。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 工作流 -->
+  <section class="section" id="flow">
+    <div class="section-head">
+      <span class="sec-num">02</span>
+      <span class="sec-label">工作方式</span>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-meta">4 步</span>
+    </div>
+    <h2 class="sec-title reveal">每一步都可见<br>可停，可回退</h2>
+    <ol class="flow">
+      <li class="reveal">
+        <span class="flow-idx">01</span>
+        <h3>描述任务</h3>
+        <p>选定项目文件夹，把要做的事写进输入框。</p>
+      </li>
+      <li class="reveal">
+        <span class="flow-idx">02</span>
+        <h3>Agent 执行</h3>
+        <p>工具调用逐条展开，命令与读写实时可见。</p>
+      </li>
+      <li class="reveal">
+        <span class="flow-idx">03</span>
+        <h3>审阅变更</h3>
+        <p>右侧面板看文件与 Diff，确认改到点上。</p>
+      </li>
+      <li class="reveal">
+        <span class="flow-idx">04</span>
+        <h3>受控撤销</h3>
+        <p>不满意就回退，历史会话随时接回。</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- 架构 -->
+  <section class="section band-pale" id="arch">
+    <div class="section-head">
+      <span class="sec-num">03</span>
+      <span class="sec-label">架构</span>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-meta">本机链路</span>
+    </div>
+    <div class="arch-layout">
+      <div class="arch-copy">
+        <h2 class="sec-title reveal">不接管 Pi，<br>只把它放到窗口里</h2>
+        <p class="reveal">Pi GUI 是 Electron 桌面应用，界面通过本机端口连接本地服务，
+        再由服务以官方 RPC 协议驱动独立的 Pi 子进程。全局 Pi 安装不被修改。</p>
+        <ul class="notes reveal">
+          <li>
+            <span class="n-idx">01</span>
+            <div><h4>独立安装</h4><p>依赖你本机已安装的 Pi Coding Agent，版本与配置由你掌控。</p></div>
+          </li>
+          <li>
+            <span class="n-idx">02</span>
+            <div><h4>回环访问</h4><p>界面与服务走本机回环端口，不对公网暴露。</p></div>
+          </li>
+          <li>
+            <span class="n-idx">03</span>
+            <div><h4>进程治理</h4><p>单个 Pi 子进程与桥接，停止、恢复与清理都有明确边界。</p></div>
+          </li>
+        </ul>
+      </div>
+      <div class="arch-diagram reveal" aria-label="架构链路示意">
+        <div class="arch-layer">
+          <span class="a-label">LAYER 01</span>
+          <h4>桌面窗口</h4>
+          <p>Electron 渲染进程 · 窗口与工作台</p>
+        </div>
+        <div class="arch-connector"><i></i><span>IPC</span></div>
+        <div class="arch-layer">
+          <span class="a-label">LAYER 02</span>
+          <h4>本机服务</h4>
+          <p>server.js · 127.0.0.1:7788</p>
+        </div>
+        <div class="arch-connector"><i></i><span>stdio · JSONL</span></div>
+        <div class="arch-layer">
+          <span class="a-label">LAYER 03</span>
+          <h4>Pi 子进程</h4>
+          <p>pi --mode rpc · 独立安装身份</p>
+        </div>
+        <div class="arch-connector"><i></i><span>工具调用</span></div>
+        <div class="arch-layer arch-wide">
+          <span class="a-label">WORKSPACE</span>
+          <h4>工作区</h4>
+          <p>文件 · Git worktree · 内置浏览器 · MCP / Skills</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 控制与安全 -->
+  <section class="section" id="control">
+    <div class="section-head">
+      <span class="sec-num">04</span>
+      <span class="sec-label">控制与安全</span>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-meta">可恢复</span>
+    </div>
+    <h2 class="sec-title reveal">改得动，也收得住</h2>
+    <div class="cards">
+      <article class="card reveal">
+        <span class="card-idx">A</span>
+        <h3>受控撤销</h3>
+        <p>变更按会话记录，回退有边界、有确认，撤销结果可核对。</p>
+      </article>
+      <article class="card reveal">
+        <span class="card-idx">B</span>
+        <h3>审阅与验证</h3>
+        <p>Diff 逐行确认，任务结果附带验证证据，避免凭感觉收工。</p>
+      </article>
+      <article class="card reveal">
+        <span class="card-idx">C</span>
+        <h3>会话恢复</h3>
+        <p>退出或中断后接回会话与草稿，后台任务状态不丢。</p>
+      </article>
+    </div>
+  </section>
+
+
+  <!-- 对照：终端 vs 窗口 -->
+  <section class="section" id="compare">
+    <div class="section-head">
+      <span class="sec-num">05</span>
+      <span class="sec-label">对照</span>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-meta">同一套 Pi</span>
+    </div>
+    <h2 class="sec-title reveal">终端直接跑，<br>还是放进窗口</h2>
+    <p class="compare-lead reveal">两边驱动的是同一个 Pi，协议也是同一套 RPC。区别只在操作面：命令行轻、可脚本化；窗口把会话、变更与任务摊开。</p>
+    <div class="compare">
+      <div class="compare-col reveal">
+        <span class="c-label">TERMINAL</span>
+        <h3>命令行里的 Pi</h3>
+        <ul>
+          <li>一条命令就能开始，占用最低</li>
+          <li>天然适合脚本、管道与批量任务</li>
+          <li>SSH 进远程机器照样能用</li>
+          <li>变更靠自己敲 git diff 核对</li>
+        </ul>
+      </div>
+      <div class="compare-col reveal">
+        <span class="c-label">PI GUI</span>
+        <h3>窗口里的同一个 Pi</h3>
+        <ul>
+          <li>侧栏按项目组织会话，可搜索与分叉</li>
+          <li>右栏逐文件 Diff，改动可受控撤销</li>
+          <li>工具调用逐条展开，Thinking 可回看</li>
+          <li>任务与验证证据留在同一处</li>
+        </ul>
+      </div>
+    </div>
+    <p class="compare-note reveal">短活、脚本、远程调度留在终端；长会话、多项目、要盯 Diff 的活放进窗口。</p>
+  </section>
+
+  <!-- 本地优先 -->
+  <section class="band-dark" id="privacy">
+    <div class="section">
+      <div class="section-head">
+        <span class="sec-num">06</span>
+        <span class="sec-label">本地优先</span>
+        <span class="sec-rule" aria-hidden="true"></span>
+        <span class="sec-meta">数据边界</span>
+      </div>
+      <h2 class="sec-title reveal">数据留在你的机器上</h2>
+      <div class="sec-body">
+        <p class="reveal">Electron + Node.js 通过本机 RPC 连接 Pi，项目与会话保存在本地，
+        不要求云端账户，不上传使用遥测。使用云端模型时，请求直接发往你所配置的供应商。</p>
+        <p class="reveal">Windows 安装程序经 SignPath.io 免费代码签名，证书由 SignPath Foundation 提供；源码以 MIT 协议开放。</p>
+        <ul class="privacy-row reveal">
+          <li><strong>0</strong><span>云端账户要求</span></li>
+          <li><strong>0</strong><span>使用遥测数据</span></li>
+          <li><strong>本地</strong><span>项目与会话存储</span></li>
+          <li><strong>MIT</strong><span>开源许可证</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 快速开始 -->
+  <section class="section" id="start">
+    <div class="section-head">
+      <span class="sec-num">07</span>
+      <span class="sec-label">快速开始</span>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-meta">约 5 分钟</span>
+    </div>
+    <h2 class="sec-title reveal">三步开始工作</h2>
+    <div class="steps">
+      <div class="step reveal">
+        <span class="s-num">1</span>
+        <div>
+          <h3>安装 Pi</h3>
+          <p>Pi GUI 使用本机独立安装的 Pi Coding Agent，需要 Node.js 22.19+ 并配置模型供应商。</p>
+          <div class="code-wrap">
+            <pre class="code"><code id="install-cmd">npm install -g @earendil-works/pi-coding-agent
+pi --version</code></pre>
+            <button class="copy-command" id="copy-command" type="button" aria-label="复制安装命令">复制命令 ⧉</button>
+          </div>
+        </div>
+      </div>
+      <div class="step reveal">
+        <span class="s-num">2</span>
+        <div>
+          <h3>下载 Pi GUI</h3>
+          <p>在 <a href="https://github.com/HYJ1817/pi-gui/releases/latest" target="_blank" rel="noopener">Releases</a> 选择 Windows 版本：
+          安装版 <code class="inline">Pi-GUI-Setup.exe</code> 或便携版 <code class="inline">Pi-GUI-portable.zip</code>。</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <span class="s-num">3</span>
+        <div>
+          <h3>开始工作</h3>
+          <p>打开 Pi GUI，添加本地项目文件夹，在输入框描述任务，右侧面板检查文件变更与执行结果。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 下载 -->
+  <section class="section" id="download">
+    <div class="section-head">
+      <span class="sec-num">08</span>
+      <span class="sec-label">下载</span>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-meta" id="ver2">最新版本</span>
+    </div>
+    <h2 class="sec-title reveal">现在就把它装上</h2>
+    <div class="sec-body">
+      <p class="release-status" id="release-status" role="status">正在读取 GitHub 最新发布…</p>
+      <div class="dl-cards reveal">
+        <a class="dl-card" id="download-installer" href="https://github.com/HYJ1817/pi-gui/releases/latest" target="_blank" rel="noopener">
+          <h3>安装版</h3>
+          <p id="installer-filename">Pi-GUI-Setup.exe</p>
+          <span class="dl-size" id="installer-size">下载文件</span>
+          <span class="dl-arrow">→</span>
+        </a>
+        <a class="dl-card" id="download-portable" href="https://github.com/HYJ1817/pi-gui/releases/latest" target="_blank" rel="noopener">
+          <h3>便携版</h3>
+          <p id="portable-filename">Pi-GUI-portable.zip</p>
+          <span class="dl-size" id="portable-size">下载文件</span>
+          <span class="dl-arrow">→</span>
+        </a>
+      </div>
+      <p class="dl-note reveal">从源码运行、测试与发布流程见 <a href="https://github.com/HYJ1817/pi-gui/tree/main/docs" target="_blank" rel="noopener">开发文档</a>。遇到问题请到 <a href="https://github.com/HYJ1817/pi-gui/issues" target="_blank" rel="noopener">Issues</a> 反馈。</p>
+    </div>
+  </section>
+
+
+  <!-- 更新日志 -->
+  <section class="section" id="changelog">
+    <div class="section-head">
+      <span class="sec-num">09</span>
+      <span class="sec-label">更新日志</span>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <a class="sec-link" href="https://github.com/HYJ1817/pi-gui/releases" target="_blank" rel="noopener">全部版本 ↗</a>
+    </div>
+    <h2 class="sec-title reveal">持续打磨，<br>逐步完善</h2>
+    <div class="release-list" id="release-list" aria-live="polite">
+      <div class="release-placeholder">发布记录将从 GitHub 自动载入。<a href="https://github.com/HYJ1817/pi-gui/releases" target="_blank" rel="noopener">查看 Releases ↗</a></div>
+    </div>
+  </section>
+
+  <!-- 常见问题 -->
+  <section class="section" id="faq">
+    <div class="section-head">
+      <span class="sec-num">10</span>
+      <span class="sec-label">常见问题</span>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-meta">4 条</span>
+    </div>
+    <h2 class="sec-title reveal">你可能想问</h2>
+    <div class="faq reveal">
+      <details>
+        <summary>Pi GUI 是免费的吗？<span>+</span></summary>
+        <p>免费。项目以 MIT 协议开源，安装包不收费；模型调用产生的费用由你所配置的供应商收取。</p>
+      </details>
+      <details>
+        <summary>需要注册账户吗？<span>+</span></summary>
+        <p>不需要云端账户。项目与会话保存在本地，不依赖 Pi GUI 的服务器。</p>
+      </details>
+      <details>
+        <summary>必须先安装 Pi 吗？<span>+</span></summary>
+        <p>是。Pi GUI 通过官方 RPC 协议驱动本机独立安装的 Pi Coding Agent，需先安装 Node.js 22.19+ 并配置模型供应商。</p>
+      </details>
+      <details>
+        <summary>支持哪些系统？<span>+</span></summary>
+        <p>当前发布提供 Windows 安装版与便携版，界面与操作以桌面端为准。</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>© 2026 Pi GUI · MIT License</span>
+  <span class="footer-links">
+    <a href="https://github.com/HYJ1817/pi-gui/tree/main/docs" target="_blank" rel="noopener">文档</a>
+    <a href="https://github.com/HYJ1817/pi-gui/blob/main/PRIVACY.md" target="_blank" rel="noopener">隐私</a>
+    <a href="https://github.com/HYJ1817/pi-gui/blob/main/LICENSE" target="_blank" rel="noopener">许可</a>
+    <a href="https://github.com/HYJ1817/pi-gui" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://pi-gui.881817.xyz" target="_blank" rel="noopener">pi-gui.881817.xyz</a>
+  </span>
+</footer>
+
+<script src="main.js?v=8"></script>
+</body>
+</html>
