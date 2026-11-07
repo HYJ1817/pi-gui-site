@@ -5,7 +5,7 @@
   "description": "Pi GUI 官网静态站",
   "scripts": {
     "test": "npm run test:unit && npm run test:smoke",
-    "test:unit": "node --test test/",
+    "test:unit": "node --test \"test/*.test.mjs\"",
     "test:smoke": "node test/smoke.mjs",
     "gen:assets": "node tools/gen-assets.mjs"
   },
